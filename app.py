@@ -13,7 +13,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def analyze_nitrite_level(image_path, mode="yellow"):
     img = cv2.imread(image_path)
     img = cv2.resize(img, (200, 200))
-    b, g, r = cv2.mean(img)[:3]  # ใช้ค่า G (สีเขียว)
+    b, g, r = cv2.mean(img)[:3]  
 
     if mode == "white":
         PCON = g - 248.63
