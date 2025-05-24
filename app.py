@@ -16,7 +16,6 @@ def analyze_nitrite_level(image_path):
     avg_color = cv2.mean(img)[:3]  # (B, G, R)
     b, g, r = avg_color
 
-    # คำนวณปริมาณไนไตรต์จากสูตร:
     PCON = g - 208.23
     CON = abs(PCON / 77.37)
     
