@@ -10,16 +10,20 @@ UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-def analyze_nitrite_level(image_path):
+def analyze_nitrite_level(image_path, mode="yellow"):
     img = cv2.imread(image_path)
     img = cv2.resize(img, (200, 200))
-    avg_color = cv2.mean(img)[:3]  # (B, G, R)
-    b, g, r = avg_color
+    b, g, r = cv2.mean(img)[:3]  # ใช้ค่า G (สีเขียว)
 
-    PCON = g - 208.23
-    CON = abs(PCON / 77.37)
-    
-    return f"ปริมาณไนไตรต์โดยประมาณ: {CON:.2f} mg/mL"
+    if mode == "white":
+        PCON = g - 248.63
+        CON_ppm = abs(PCON / 35.433)
+    else:  # yellow
+        PCON = g - 208.23
+        CON_ppm = abs(PCON / 77.37)
+
+    CON_mg_ml = CON_ppm / 1000
+    return f"ปริมาณไนไตรต์โดยประมาณ: {CON_mg_ml:.4f} mg/mL ({'ฉี่ใส' if mode == 'white' else 'ฉี่เหลือง'})"
 
 @app.route('/')
 def index():
@@ -27,6 +31,8 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    mode = request.form.get('mode', 'yellow')  # ค่า default คือ yellow
+
     if 'image' in request.files:
         file = request.files['image']
         filename = file.filename
@@ -41,7 +47,7 @@ def upload():
         with open(filepath, "wb") as f:
             f.write(binary_data)
 
-    result = analyze_nitrite_level(filepath)
+    result = analyze_nitrite_level(filepath, mode)
     return render_template('result.html', image_url=f'/uploads/{filename}', result=result)
 
 @app.route('/uploads/<filename>')
