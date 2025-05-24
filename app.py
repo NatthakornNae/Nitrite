@@ -19,7 +19,7 @@ def analyze_nitrite_level(image_path):
     PCON = g - 208.23
     CON = abs(PCON / 77.37)
     
-    return f"ปริมาณไนไตรต์โดยประมาณ: {CON:.2f} ppm"
+    return f"ปริมาณไนไตรต์โดยประมาณ: {CON:.2f} mg/mL"
 
 @app.route('/')
 def index():
